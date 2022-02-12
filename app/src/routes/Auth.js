@@ -20,9 +20,13 @@ const Auth = () => {
     event.preventDefault();
     let data;
     if (newAccount) {
-      data = createUserWithEmailAndPassword(authService, email, password);
+      data = createUserWithEmailAndPassword(authService, email, password).catch((e) => {
+        setError(e.message);
+      });
     } else {
-      data = signInWithEmailAndPassword(authService, email, password);
+      data = signInWithEmailAndPassword(authService, email, password).catch((error) => {
+        setError(error.message);
+      });
     }
   };
   const toggleAccount = () => { setNewAccount((prev) => !prev) };
@@ -44,6 +48,7 @@ const Auth = () => {
         <input name="E-mail" onChange={onChange} type="text" placeholder="E-mail" value={email} required />
         <input name="Password" onChange={onChange} type="password" placeholder="Password" value={password} required />
         <input type="submit" value={newAccount ? "Create Account" : "Sign In"} />
+        {error}
       </form>
       <span onClick={toggleAccount}>{newAccount ? "Sign In" : "Create Account"}</span>
       <div>
