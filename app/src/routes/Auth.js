@@ -17,16 +17,12 @@ const Auth = () => {
     }
   };
   const onSubmit = async (event) => {
-    try {
-      event.preventDefault();
-      let data;
-      if (newAccount) {
-        data = createUserWithEmailAndPassword(authService, email, password);
-      } else {
-        data = signInWithEmailAndPassword(authService, email, password);
-      }
-    } catch (error) {
-      setError(error.message);
+    event.preventDefault();
+    let data;
+    if (newAccount) {
+      data = createUserWithEmailAndPassword(authService, email, password);
+    } else {
+      data = signInWithEmailAndPassword(authService, email, password);
     }
   };
   const toggleAccount = () => { setNewAccount((prev) => !prev) };
@@ -48,7 +44,6 @@ const Auth = () => {
         <input name="E-mail" onChange={onChange} type="text" placeholder="E-mail" value={email} required />
         <input name="Password" onChange={onChange} type="password" placeholder="Password" value={password} required />
         <input type="submit" value={newAccount ? "Create Account" : "Sign In"} />
-        {error}
       </form>
       <span onClick={toggleAccount}>{newAccount ? "Sign In" : "Create Account"}</span>
       <div>
