@@ -7,6 +7,7 @@ export default () => {
   const onLogOutClick = () => {
     authService.signOut();
     history.push("/");
+
   }
   return (
     <>
