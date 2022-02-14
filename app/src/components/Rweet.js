@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { dbService } from "fBase";
+import { dbService, storage } from "fBase";
 import { doc, deleteDoc, updateDoc } from "firebase/firestore";
+import { deleteObject, ref } from "firebase/storage";
 
 const Rweet = ({ rweetObj, isOwner }) => {
   const [editing, setEditing] = useState(false);
@@ -8,8 +9,10 @@ const Rweet = ({ rweetObj, isOwner }) => {
   const onDeleteClick = async () => {
     const ok = window.confirm("Are you sure you wnat to delete this rweet?");
     if (ok) {
-      const rweetTextRef = doc(dbService, "rweets", `${rweetObj.id}`);
-      await deleteDoc(rweetTextRef);
+      await deleteDoc(doc(dbService, "rweets", `${rweetObj.id}`));
+      if (rweetObj.attachmentUrl) {
+        await deleteObject(ref(storage, rweetObj.attachmentUrl));
+      }
     }
   }
   const toggleEditing = () => setEditing((prev) => !prev)
@@ -41,6 +44,7 @@ const Rweet = ({ rweetObj, isOwner }) => {
         ) :
           <>
             <h4>{rweetObj.text}</h4>
+            {rweetObj.attachmentUrl && <img src={rweetObj.attachmentUrl} width="50px" height="50px" />}
             {isOwner && (
               <>
                 <button onClick={toggleEditing}>Edit Rweet</button>

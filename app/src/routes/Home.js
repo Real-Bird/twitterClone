@@ -3,12 +3,13 @@ import { v4 as uuidv4 } from "uuid";
 import { dbService, storage } from "fBase";
 import { collection, addDoc, query, getDocs, onSnapshot, orderBy } from "firebase/firestore";
 import Rweet from "components/Rweet";
-import { ref, uploadString } from "firebase/storage";
+import { ref, uploadString, getDownloadURL } from "firebase/storage";
 
 const Home = ({ userObj }) => {
   const [rweet, setRweet] = useState("");
   const [rweets, setRweets] = useState([]);
-  const [attachement, setAttachment] = useState();
+  const [attachment, setAttachment] = useState("");
+  const [imgFile, setImgFile] = useState("");
   const fileClear = useRef();
   // const getRweets = async () => {
   //   const q = query(collection(dbService, "rweets"));
@@ -38,19 +39,22 @@ const Home = ({ userObj }) => {
   }, []);
   const onSubmit = async (event) => {
     event.preventDefault();
-    const fileRef = ref(storage, `${userObj.uid}/${uuidv4()}`);
-    const response = await uploadString(fileRef, attachement, "data_url");
-    console.log(response);
-    // try {
-    //   const docRef = await addDoc(collection(dbService, "rweets"), {
-    //     text: rweet,
-    //     createdAt: Date.now(),
-    //     creatorId: userObj.uid,
-    //   });
-    //   setRweet("");
-    // } catch (e) {
-    //   console.error("Error adding document: ", e);
-    // }
+    let attachmentUrl = "";
+    if (attachment !== "") {
+      const attachmentRef = ref(storage, `${userObj.uid}/${uuidv4()}`);
+      const response = await uploadString(attachmentRef, attachment, "data_url");
+      attachmentUrl = await getDownloadURL(response.ref);
+    }
+    const docRef = {
+      text: rweet,
+      createdAt: Date.now(),
+      creatorId: userObj.uid,
+      attachmentUrl,
+    };
+    await addDoc(collection(dbService, "rweets"), docRef);
+    setRweet("");
+    setAttachment("");
+    setImgFile("");
   }
   const onChange = (event) => {
     const {
@@ -60,28 +64,28 @@ const Home = ({ userObj }) => {
   };
   const onFileChange = (event) => {
     const {
-      target: { files },
+      target: { files, value },
     } = event;
-    const theFile = files[0];
+    setImgFile(value);
     const reader = new FileReader();
     reader.onloadend = (finishedEvent) => {
       const { currentTarget: { result } } = finishedEvent;
       setAttachment(result);
     }
-    reader.readAsDataURL(theFile);
+    reader.readAsDataURL(files[0]);
   }
   const onClearImgClick = () => {
-    setAttachment(null);
+    setAttachment("");
     fileClear.current.value = null;
   }
   return (
     <div>
       <form onSubmit={onSubmit}>
         <input onChange={onChange} type="text" placeholder="What's on your mind?" maxLength={120} value={rweet} />
-        <input onChange={onFileChange} type="file" accept="image/*" ref={fileClear} />
-        <input type="submit" value="Rweet" />
-        {attachement && <div>
-          <img src={attachement} width="50px" height="50px" />
+        <input onChange={onFileChange} type="file" accept="image/*" ref={fileClear} value={imgFile} />
+        <input type="submit" value="Rweet" ref={fileClear} />
+        {attachment && <div>
+          <img src={attachment} width="50px" height="50px" />
           <button onClick={onClearImgClick}>Clear</button>
         </div>}
       </form>
