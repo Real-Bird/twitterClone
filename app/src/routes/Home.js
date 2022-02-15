@@ -24,18 +24,17 @@ const Home = ({ userObj }) => {
   // }
   useEffect(() => {
     let isMount = true;
-    if (isMount) {
-      const q = query(collection(dbService, "rweets"), orderBy("createdAt", "desc"));
-      onSnapshot(q, (snapshot) => {
-        const rweetArr = snapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }));
-
+    const q = query(collection(dbService, "rweets"), orderBy("createdAt", "desc"));
+    onSnapshot(q, (snapshot) => {
+      const rweetArr = snapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+      if (isMount) {
         setRweets(rweetArr);
-      })
-      return () => isMount = false;
-    }
+      }
+    })
+    return () => isMount = false;
   }, []);
   const onSubmit = async (event) => {
     event.preventDefault();
