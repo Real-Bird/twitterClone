@@ -62,11 +62,14 @@ const RweetFactory = ({ userObj, }) => {
         <input className="factoryInput__input" onChange={onChange} type="text" placeholder="What's on your mind?" maxLength={120} value={rweet} />
         <input className="factoryInput__arrow" type="submit" value="&rarr;" ref={fileClear} />
       </div>
-      <label htmlFor="attach-file" className="factoryInput__label"><span>Add photos</span>
-        <input id="attach-file" onChange={onFileChange} type="file" accept="image/*" ref={fileClear} value={imgFile} style={{
-          opacity: 0,
-        }} />
-        <FontAwesomeIcon icon={faPlus} /></label>
+      <label htmlFor="attach-file" className="factoryInput__label">
+        <span>Add photos</span>
+        <FontAwesomeIcon icon={faPlus} />
+      </label>
+      <input id="attach-file" onChange={onFileChange} type="file" accept="image/*" ref={fileClear} value={imgFile} style={{
+        opacity: 0,
+      }} />
+
       {attachment && (
         <div className="factoryForm__attachment">
           <img src={attachment} style={{
