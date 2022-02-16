@@ -1,7 +1,6 @@
-import { authService, dbService } from "fBase";
+import { authService } from "fBase";
 import { updateProfile } from "firebase/auth";
-import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 
 export default ({ userObj, refreshUser }) => {
@@ -45,13 +44,15 @@ export default ({ userObj, refreshUser }) => {
     }
   }
   return (
-    <>
-      <form onSubmit={onSubmit}>
-        <input onChange={onChange} type="text" placeholder="Display name" value={newName} />
-        <input type="submit" value="Update Profile" />
+    <div className="container">
+      <form onSubmit={onSubmit} className="profileForm">
+        <input onChange={onChange} className="formInput" type="text" autoFocus placeholder="Display name" value={newName} />
+        <input className="formBtn" type="submit" value="Update Profile" style={{
+          marginTop: 10,
+        }} />
       </form>
-      <button onClick={onLogOutClick}>Log Out</button>
-    </>
+      <span className="formBtn cancelBtn logOut" onClick={onLogOutClick}>Log Out</span>
+    </div>
   )
 }
 
