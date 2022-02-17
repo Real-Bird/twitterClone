@@ -27,6 +27,7 @@ const RweetFactory = ({ userObj, }) => {
       createdAt: Date.now(),
       creatorId: userObj.uid,
       attachmentUrl,
+      nickName: userObj.displayName,
     };
     await addDoc(collection(dbService, "rweets"), docRef);
     setRweet("");
