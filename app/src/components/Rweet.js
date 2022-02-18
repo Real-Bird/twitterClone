@@ -22,7 +22,7 @@ const Rweet = ({ rweetObj, isOwner, userObj }) => {
               detail.items.forEach(async (item) => {
                 let refProfilePath = await getDownloadURL(ref(storage, item.fullPath))
                 setRefStorage(refProfilePath);
-                setIsPhotoLoad((prev) => (!prev));
+                setIsPhotoLoad(false);
               });
             });
           }
@@ -31,7 +31,6 @@ const Rweet = ({ rweetObj, isOwner, userObj }) => {
     } return () => isMount = false;
   }, [])
   const onDeleteClick = async () => {
-    console.log(refStorage)
     const ok = window.confirm("Are you sure you wnat to delete this rweet?");
     if (ok) {
       await deleteDoc(doc(dbService, "rweets", `${rweetObj.id}`));
