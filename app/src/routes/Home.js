@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { dbService } from "fBase";
+import { authService, dbService } from "fBase";
 import { collection, query, onSnapshot, orderBy } from "firebase/firestore";
 import Rweet from "components/Rweet";
 import RweetFactory from "components/RweetFactory";
+import { onAuthStateChanged } from "firebase/auth";
 
 const Home = ({ userObj }) => {
 
@@ -23,7 +24,7 @@ const Home = ({ userObj }) => {
   useEffect(() => {
     let isMount = true;
     const q = query(collection(dbService, "rweets"), orderBy("createdAt", "desc"));
-    onSnapshot(q, (snapshot) => {
+    const unsubscribe = onSnapshot(q, (snapshot) => {
       const rweetArr = snapshot.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
@@ -32,6 +33,11 @@ const Home = ({ userObj }) => {
         setRweets(rweetArr);
       }
     })
+    onAuthStateChanged(authService, (user) => {
+      if (user == null) {
+        unsubscribe();
+      }
+    });
     return () => isMount = false;
   }, []);
 

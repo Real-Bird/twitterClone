@@ -16,6 +16,7 @@ function App() {
       // } else {
       //   setIsLoggedIn(false);
       // }
+
       if (user) {
         if (user.displayName == null) {
           // const ind = user.email.indexOf("@");
@@ -23,12 +24,17 @@ function App() {
           await updateProfile(user, {
             displayName: uuidv4(),
           })
+        } else if (user.photoURL == null) {
+          await updateProfile(user, {
+            photoURL: "https://github.com/Real-Bird/pb/blob/master/bagic_profile.png?raw=true",
+          })
         }
         // setUserObj(user);
         setUserObj({
           displayName: user.displayName,
           uid: user.uid,
-          updateProfile: (args) => updateProfile(user, { displayName: user.displayName }),
+          profilePhoto: user.photoURL,
+          updateProfile: (args) => updateProfile(user, { displayName: user.displayName, profilePhoto: user.photoURL, }),
         });
       } else {
         setUserObj(null);
@@ -42,7 +48,8 @@ function App() {
     setUserObj({
       displayName: user.displayName,
       uid: user.uid,
-      updateProfile: (args) => updateProfile(user, { displayName: user.displayName }),
+      profilePhoto: user.photoURL,
+      updateProfile: (args) => updateProfile(user, { displayName: user.displayName, profilePhoto: user.photoURL, }),
     });
   }
   // console.log(authService.currentUser);
@@ -50,10 +57,18 @@ function App() {
   //   console.log(authService.currentUser);
   // }, 2000);
   return (
-    <div>
+    <div className="wrap">
       {/* {init ? <AppRouter isLoggedIn={isLoggedIn} userObj={userObj} /> : "Initializing..."} */}
-      {init ? <AppRouter isLoggedIn={Boolean(userObj)} userObj={userObj} refreshUser={refreshUser} /> : "Initializing..."}
-      <footer className="footer"> &copy; {new Date().getFullYear()} Rwitter by Real-Bird</footer>
+      {init ? (
+        <main className="main">
+          <AppRouter isLoggedIn={Boolean(userObj)} userObj={userObj} refreshUser={refreshUser} />
+        </main>
+      ) : "Initializing..."}
+
+      <footer className="footer">
+        <div> &copy; {new Date().getFullYear()} Rwitter by Real-Bird</div>
+      </footer>
+
     </div>
   );
 }

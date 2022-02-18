@@ -1,14 +1,37 @@
-import React, { useState } from "react";
-import { dbService, storage } from "fBase";
+import React, { useEffect, useState } from "react";
+import { authService, dbService, storage } from "fBase";
 import { doc, deleteDoc, updateDoc } from "firebase/firestore";
-import { deleteObject, ref } from "firebase/storage";
+import { deleteObject, getDownloadURL, listAll, ref, uploadString } from "firebase/storage";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faPencilAlt } from "@fortawesome/free-solid-svg-icons";
+import loadingGif from "../img/profile_load.gif";
 
 const Rweet = ({ rweetObj, isOwner, userObj }) => {
   const [editing, setEditing] = useState(false);
   const [newRweet, setNewRweet] = useState(rweetObj.text);
+  const [refStorage, setRefStorage] = useState("");
+  const [isPhotoLoad, setIsPhotoLoad] = useState(true);
+  useEffect(() => {
+    let isMount = true;
+    if (isMount) {
+      const listRef = ref(storage, `profile`);
+      listAll(listRef).then((res) => {
+        res.prefixes.forEach((folderRef) => {
+          if (folderRef.name === rweetObj.creatorId) {
+            listAll(folderRef).then((detail) => {
+              detail.items.forEach(async (item) => {
+                let refProfilePath = await getDownloadURL(ref(storage, item.fullPath))
+                setRefStorage(refProfilePath);
+                setIsPhotoLoad((prev) => (!prev));
+              });
+            });
+          }
+        });
+      });
+    } return () => isMount = false;
+  }, [])
   const onDeleteClick = async () => {
+    console.log(refStorage)
     const ok = window.confirm("Are you sure you wnat to delete this rweet?");
     if (ok) {
       await deleteDoc(doc(dbService, "rweets", `${rweetObj.id}`));
@@ -47,14 +70,20 @@ const Rweet = ({ rweetObj, isOwner, userObj }) => {
           </>
         ) :
           <>
-            <p className="writer">{rweetObj.nickName}</p>
-            <h4>{rweetObj.text}</h4>
-            {rweetObj.attachmentUrl && <img src={rweetObj.attachmentUrl} />}
+            <div className="article">
+              <div className="block">
+                {isPhotoLoad ? <img src={loadingGif} height="40px" width="40px" /> : <img className="photo" src={refStorage} height="40px" width="40px" />}
+                <p className="writer">{rweetObj.nickName}</p>
+              </div>
+              <p style={{ fontSize: 18 }}>{rweetObj.text}</p>
+            </div>
+            {rweetObj.attachmentUrl && <img src={rweetObj.attachmentUrl} className="__attach" />}
             {isOwner && (
               <div className="nweet__actions">
                 <span onClick={toggleEditing}><FontAwesomeIcon icon={faPencilAlt} /></span>
                 <span onClick={onDeleteClick}><FontAwesomeIcon icon={faTrash} /></span>
               </div>
+
             )}</>
 
       }
