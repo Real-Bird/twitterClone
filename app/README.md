@@ -1,6 +1,6 @@
 # 트위터 클론 코딩
 
-**![노마드 코더 강의](https://nomadcoders.co/nwitter/lobby)** 결과물입니다.
+**[노마드 코더 강의](https://nomadcoders.co/nwitter/lobby)** 결과물입니다.
 
 **ReactJS**와 **FireBase**를 사용하였습니다.
 
